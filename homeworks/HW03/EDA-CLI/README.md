@@ -46,6 +46,7 @@ uv run eda-cli report data/example.csv \
   --max-hist-columns 8 \
   --top-k-categories 5 \
   --min-missing-share 0.4
+```
 
 В результате в каталоге `reports/` появятся:
 
