@@ -196,6 +196,23 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     flags["constant_columns"] = constant_columns
     flags["has_constant_columns"] = len(constant_columns) > 0
 
+    #Эвристика 2: подозрительные дубликаты идентификаторов
+    # Ищем колонки, в названии которых есть "id" и у которых количество уникальных
+    # значений меньше количества ненулевых (есть повторяющиеся id)
+
+    id_columns: List[str] = []
+    id_columns_with_duplicates: List[str] = []
+
+    for col in summary.columns:
+        name_lower = col.name.lower()
+        if "id" in name_lower:
+            id_columns.append(col.name)
+            if col.non_null > 0 and col.unique < col.non_null:
+                id_columns_with_duplicates.append(col.name)
+
+    flags["id_columns"] = id_columns
+    flags["id_columns_with_duplicates"] = id_columns_with_duplicates
+    flags["has_suspicious_id_duplicates"] = len(id_columns_with_duplicates) > 0
 
     # Простейший «скор» качества
     score = 1.0
