@@ -170,11 +170,7 @@ def top_categories(
     return result
 
 
-def compute_quality_flags(
-    summary: DatasetSummary,
-    missing_df: pd.DataFrame,
-    df: Optional[pd.DataFrame] = None,
-) -> Dict[str, Any]:
+def compute_quality_flags(summary: DatasetSummary,missing_df: pd.DataFrame, df: Optional[pd.DataFrame] = None,) -> Dict[str, Any]:
     """
     Эвристики «качества» данных:
     - слишком много пропусков;
