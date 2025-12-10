@@ -90,7 +90,6 @@ def test_quality_flags_for_constant_zero_and_id_duplicates():
 def test_correlation_and_top_categories():
     df = _sample_df()
     corr = correlation_matrix(df)
-    # корреляционная матрица либо не пустая, либо содержит колонку age
     assert corr.empty is False or "age" in corr.columns
 
     top_cats = top_categories(df, max_columns=5, top_k=2)
