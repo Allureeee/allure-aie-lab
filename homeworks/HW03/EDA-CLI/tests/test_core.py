@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import pandas as pd
+import pytest
+
 
 from eda_cli.core import (
     compute_quality_flags,
