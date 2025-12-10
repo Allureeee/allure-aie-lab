@@ -170,36 +170,43 @@ def top_categories(
     return result
 
 
-def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> Dict[str, Any]:
+def compute_quality_flags(
+    summary: DatasetSummary,
+    missing_df: pd.DataFrame,
+    df: Optional[pd.DataFrame] = None,
+) -> Dict[str, Any]:
     """
-    Простейшие эвристики «качества» данных:
+    Эвристики «качества» данных:
     - слишком много пропусков;
     - подозрительно мало строк;
     - подозрительно много столбцов;
     - постоянные колонки;
     - подозрительные дубликаты идентификаторов;
+    - много нулевых значений в числовых колонках.
     """
     flags: Dict[str, Any] = {}
+
+    # Базовые флаги по размеру датасета
     flags["too_few_rows"] = summary.n_rows < 100
     flags["too_many_columns"] = summary.n_cols > 100
 
+    # Пропуски
     max_missing_share = float(missing_df["missing_share"].max()) if not missing_df.empty else 0.0
     flags["max_missing_share"] = max_missing_share
     flags["too_many_missing"] = max_missing_share > 0.5
 
-    #Эвристика 1: постоянные колонки
-    # Колонка считается "постоянной", если среди ненулевых значений ровно одно уникальное
+    # === Эвристика 1: постоянные колонки ===
+    # Колонка считается постоянной, если среди ненулевых значений ровно одно уникальное
     constant_columns: List[str] = [
-        col.name for col in summary.columns
+        col.name
+        for col in summary.columns
         if col.non_null > 0 and col.unique <= 1
     ]
     flags["constant_columns"] = constant_columns
     flags["has_constant_columns"] = len(constant_columns) > 0
 
-    #Эвристика 2: подозрительные дубликаты идентификаторов
-    # Ищем колонки, в названии которых есть "id" и у которых количество уникальных
-    # значений меньше количества ненулевых (есть повторяющиеся id)
-
+    # Эвристика 2: подозрительные дубликаты идентификаторов 
+    # Ищем столбцы с подстрокой "id" в имени; если unique < non_null — есть дубликаты
     id_columns: List[str] = []
     id_columns_with_duplicates: List[str] = []
 
@@ -214,13 +221,47 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     flags["id_columns_with_duplicates"] = id_columns_with_duplicates
     flags["has_suspicious_id_duplicates"] = len(id_columns_with_duplicates) > 0
 
-    # Простейший «скор» качества
+    # Эвристика 3: много нулевых значений в числовых колонках ===
+    # Порог можно настроить; возьмём 50% нулей и больше
+    zero_share_threshold = 0.5
+    zero_shares: Dict[str, float] = {}
+    many_zero_value_columns: List[str] = []
+
+    if df is not None and summary.n_rows > 0:
+        numeric_df = df.select_dtypes(include="number")
+        if not numeric_df.empty:
+            zero_counts = (numeric_df == 0).sum()
+            zero_shares_series = zero_counts / summary.n_rows
+            zero_shares = zero_shares_series.to_dict()
+
+            many_zero_value_columns = [
+                col_name
+                for col_name, share in zero_shares.items()
+                if share >= zero_share_threshold
+            ]
+
+    flags["zero_shares"] = zero_shares              # колонка -> доля нулей
+    flags["many_zero_value_columns"] = many_zero_value_columns
+    flags["has_many_zero_values"] = len(many_zero_value_columns) > 0
+
     score = 1.0
-    score -= max_missing_share  # чем больше пропусков, тем хуже
+
+    score -= max_missing_share
+
     if summary.n_rows < 100:
         score -= 0.2
+
     if summary.n_cols > 100:
         score -= 0.1
+
+    if flags["has_constant_columns"]:
+        score -= 0.05
+
+    if flags["has_suspicious_id_duplicates"]:
+        score -= 0.1
+
+    if flags["has_many_zero_values"]:
+        score -= 0.05
 
     score = max(0.0, min(1.0, score))
     flags["quality_score"] = score
