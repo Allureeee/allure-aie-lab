@@ -175,7 +175,9 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     Простейшие эвристики «качества» данных:
     - слишком много пропусков;
     - подозрительно мало строк;
-    и т.п.
+    - подозрительно много столбцов;
+    - постоянные колонки;
+    - подозрительные дубликаты идентификаторов;
     """
     flags: Dict[str, Any] = {}
     flags["too_few_rows"] = summary.n_rows < 100
@@ -184,6 +186,16 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     max_missing_share = float(missing_df["missing_share"].max()) if not missing_df.empty else 0.0
     flags["max_missing_share"] = max_missing_share
     flags["too_many_missing"] = max_missing_share > 0.5
+
+    #Эвристика 1: постоянные колонки
+    # Колонка считается "постоянной", если среди ненулевых значений ровно одно уникальное
+    constant_columns: List[str] = [
+        col.name for col in summary.columns
+        if col.non_null > 0 and col.unique <= 1
+    ]
+    flags["constant_columns"] = constant_columns
+    flags["has_constant_columns"] = len(constant_columns) > 0
+
 
     # Простейший «скор» качества
     score = 1.0
