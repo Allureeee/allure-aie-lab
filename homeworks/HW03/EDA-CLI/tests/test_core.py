@@ -13,6 +13,7 @@ from eda_cli.core import (
 
 
 def _sample_df() -> pd.DataFrame:
+    """Небольшой учебный DataFrame для базовых тестов."""
     return pd.DataFrame(
         {
             "age": [10, 20, 30, None],
@@ -22,7 +23,10 @@ def _sample_df() -> pd.DataFrame:
     )
 
 
-def test_summarize_dataset_basic():
+def test_summarize_dataset_basic() -> None:
+    """Проверяем, что summarize_dataset и flatten_summary_for_print
+    возвращают корректные размеры и базовые колонки.
+    """
     df = _sample_df()
     summary = summarize_dataset(df)
 
@@ -36,7 +40,10 @@ def test_summarize_dataset_basic():
     assert "missing_share" in summary_df.columns
 
 
-def test_missing_table_and_quality_flags():
+def test_missing_table_and_quality_flags() -> None:
+    """Проверяем missing_table и базовый диапазон quality_score,
+    а также наличие новых флагов в словаре.
+    """
     df = _sample_df()
     missing_df = missing_table(df)
 
@@ -48,24 +55,24 @@ def test_missing_table_and_quality_flags():
 
     # quality_score должен быть в [0, 1]
     assert 0.0 <= flags["quality_score"] <= 1.0
-    # новые ключи хотя бы присутствуют
+
+    # словарь флагов содержит ключи для новых эвристик
     assert "has_constant_columns" in flags
     assert "has_suspicious_id_duplicates" in flags
     assert "has_many_zero_values" in flags
 
 
-def test_quality_flags_for_constant_zero_and_id_duplicates():
-    """
-    Специальный датасет с:
-    - константной колонкой;
-    - дубликатами идентификатора;
-    - колонкой с большим числом нулей.
+def test_quality_flags_for_constant_zero_and_id_duplicates() -> None:
+    """Тест на три новые эвристики:
+    - постоянную колонку;
+    - дубликаты идентификатора;
+    - много нулей в числовой колонке.
     """
     df = pd.DataFrame(
         {
-            "user_id": [1, 1, 2, 3],         # дубликат ID
-            "const_col": [5, 5, 5, 5],       # постоянная колонка
-            "value": [0, 0, 10, 0],          # 3 из 4 значений — ноль (75%)
+            "user_id": [1, 1, 2, 3],  # дубликат ID
+            "const_col": [5, 5, 5, 5],  # постоянная колонка
+            "value": [0, 0, 10, 0],  # 3 из 4 значений — ноль (75 %)
         }
     )
 
@@ -87,9 +94,36 @@ def test_quality_flags_for_constant_zero_and_id_duplicates():
     assert flags["zero_shares"]["value"] >= 0.5
 
 
-def test_correlation_and_top_categories():
+def test_zero_share_below_threshold_has_no_many_zero_flag() -> None:
+    """ДОПОЛНИТЕЛЬНЫЙ тест по 2.3.3:
+    проверяем, что если доля нулей меньше порога, флаг has_many_zero_values=False.
+    """
+    df = pd.DataFrame(
+        {
+            "user_id": [1, 2, 3, 4],
+            "value": [0, 1, 2, 3],  # 1 ноль из 4 (25 %), ниже порога 50 %
+        }
+    )
+
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags = compute_quality_flags(summary, missing_df, df)
+
+    # Доля нулей посчитана корректно
+    assert pytest.approx(flags["zero_shares"]["value"], rel=1e-6) == 0.25
+
+    # Порог по нулям не превышен — флаг должен быть False,
+    # и колонка не должна быть в many_zero_value_columns.
+    assert flags["has_many_zero_values"] is False
+    assert "value" not in flags["many_zero_value_columns"]
+
+
+def test_correlation_and_top_categories() -> None:
+    """Проверяем, что считаются корреляции и top-категории."""
     df = _sample_df()
     corr = correlation_matrix(df)
+
+    # либо матрица не пустая, либо в ней есть колонка age
     assert corr.empty is False or "age" in corr.columns
 
     top_cats = top_categories(df, max_columns=5, top_k=2)
