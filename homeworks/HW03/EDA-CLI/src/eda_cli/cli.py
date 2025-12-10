@@ -20,6 +20,7 @@ from .viz import (
     plot_missing_matrix,
     plot_histograms_per_column,
     save_top_categories_tables,
+    plot_category_counts_bar,
 )
 
 app = typer.Typer(help="Мини-CLI для EDA CSV-файлов")
@@ -84,26 +85,21 @@ def report(
     ),
 ) -> None:
     """
-    Сгенерировать полный EDA-отчёт:
-    - текстовый overview и summary по колонкам (CSV/Markdown);
-    - статистика пропусков;
-    - корреляционная матрица;
-    - top-k категорий по категориальным признакам;
-    - картинки: гистограммы, матрица пропусков, heatmap корреляции.
+    Сгенерировать полный EDA-отчёт.
     """
     out_root = Path(out_dir)
     out_root.mkdir(parents=True, exist_ok=True)
 
     df = _load_csv(Path(path), sep=sep, encoding=encoding)
 
-    # 1. Обзор
+    # 1. Обзор и табличные данные
     summary = summarize_dataset(df)
     summary_df = flatten_summary_for_print(summary)
     missing_df = missing_table(df)
     corr_df = correlation_matrix(df)
     top_cats = top_categories(df, top_k=top_k_categories)
 
-    # 2. Качество в целом (передаём df, чтобы сработала эвристика про нули)
+    # 2. Качество данных
     quality_flags = compute_quality_flags(summary, missing_df, df=df)
 
     # Колонки с долей пропусков выше порога
@@ -112,7 +108,28 @@ def report(
         problematic = missing_df[missing_df["missing_share"] >= min_missing_share]
         problematic_missing_columns = problematic.index.tolist()
 
-    # 3. Сохраняем табличные артефакты
+    # 3. Bar-chart по категориальной колонке
+    bar_chart_path: Optional[Path] = None
+    bar_chart_column: Optional[str] = None
+
+    # предпочтительно использовать колонку country, если она есть;
+    # иначе берём первую строковую/категориальную колонку.
+    if "country" in df.columns:
+        bar_chart_column = "country"
+    else:
+        cat_cols = df.select_dtypes(include=["object", "category"]).columns
+        if len(cat_cols) > 0:
+            bar_chart_column = str(cat_cols[0])
+
+    if bar_chart_column is not None:
+        bar_chart_path = plot_category_counts_bar(
+            df,
+            column=bar_chart_column,
+            out_path=out_root / f"bar_{bar_chart_column}.png",
+            top_k=top_k_categories,
+        )
+
+    # 4. Сохраняем табличные артефакты
     summary_df.to_csv(out_root / "summary.csv", index=False)
     if not missing_df.empty:
         missing_df.to_csv(out_root / "missing.csv", index=True)
@@ -120,11 +137,10 @@ def report(
         corr_df.to_csv(out_root / "correlation.csv", index=True)
     save_top_categories_tables(top_cats, out_root / "top_categories")
 
-    # 4. Markdown-отчёт
+    # 5. Markdown-отчёт
     md_path = out_root / "report.md"
     report_title = title or "EDA-отчёт"
 
-    # Красивые строки для списков флагов
     constant_cols_display = ", ".join(quality_flags["constant_columns"]) or "нет"
     id_dups_display = ", ".join(quality_flags["id_columns_with_duplicates"]) or "нет"
     many_zero_display = ", ".join(quality_flags["many_zero_value_columns"]) or "нет"
@@ -162,9 +178,7 @@ def report(
                     f.write(f"- {col}: {share:.2%}\n")
                 f.write("\n")
             else:
-                f.write(
-                    "Нет колонок с долей пропусков выше заданного порога.\n\n"
-                )
+                f.write("Нет колонок с долей пропусков выше заданного порога.\n\n")
 
         f.write("## Корреляция числовых признаков\n\n")
         if corr_df.empty:
@@ -185,9 +199,21 @@ def report(
         f.write(
             f"Построены гистограммы максимум для {max_hist_columns} числовых колонок.\n"
         )
-        f.write("См. файлы `hist_*.png`.\n")
+        f.write("См. файлы `hist_*.png`.\n\n")
 
-    # 5. Картинки
+        f.write("## Распределение по категориям\n\n")
+        if bar_chart_path is not None and bar_chart_column is not None:
+            f.write(
+                "Построен bar-chart по количеству объектов в категориальной колонке "
+                f"`{bar_chart_column}`. См. файл `{bar_chart_path.name}`.\n\n"
+            )
+        else:
+            f.write(
+                "Категориальная колонка для построения bar-chart не найдена "
+                "(нет колонок типа object/category).\n\n"
+            )
+
+    # 6. Картинки
     plot_histograms_per_column(df, out_root, max_columns=max_hist_columns)
     plot_missing_matrix(df, out_root / "missing_matrix.png")
     plot_correlation_heatmap(df, out_root / "correlation_heatmap.png")
@@ -196,6 +222,8 @@ def report(
     typer.echo(f"- Основной markdown: {md_path}")
     typer.echo("- Табличные файлы: summary.csv, missing.csv, correlation.csv, top_categories/*.csv")
     typer.echo("- Графики: hist_*.png, missing_matrix.png, correlation_heatmap.png")
+    if bar_chart_path is not None:
+        typer.echo(f"- Bar-chart категорий: {bar_chart_path}")
 
 
 if __name__ == "__main__":

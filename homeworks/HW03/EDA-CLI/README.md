@@ -69,6 +69,7 @@ uv run eda-cli report data/example.csv \
 - `hist_*.png` – гистограммы числовых колонок;
 - `missing_matrix.png` – визуализация пропусков;
 - `correlation_heatmap.png` – тепловая карта корреляций.
+- `bar_country.png` (или другой файл вида `bar_<колонка>.png`) — bar-chart по количеству объектов в выбранной категориальной колонке (дополнительное задание).
 
 ## Тесты
 
