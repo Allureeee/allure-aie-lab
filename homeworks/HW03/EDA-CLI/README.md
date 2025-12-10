@@ -40,6 +40,12 @@ uv run eda-cli overview data/example.csv
 ```bash
 uv run eda-cli report data/example.csv --out-dir reports
 ```
+```bash
+uv run eda-cli report data/example.csv \
+  --out-dir reports \
+  --max-hist-columns 8 \
+  --top-k-categories 5 \
+  --min-missing-share 0.4
 
 В результате в каталоге `reports/` появятся:
 
