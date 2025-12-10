@@ -44,15 +44,54 @@ def test_missing_table_and_quality_flags():
     assert missing_df.loc["age", "missing_count"] == 1
 
     summary = summarize_dataset(df)
-    flags = compute_quality_flags(summary, missing_df)
+    flags = compute_quality_flags(summary, missing_df, df)
+
+    # quality_score должен быть в [0, 1]
     assert 0.0 <= flags["quality_score"] <= 1.0
+    # новые ключи хотя бы присутствуют
+    assert "has_constant_columns" in flags
+    assert "has_suspicious_id_duplicates" in flags
+    assert "has_many_zero_values" in flags
+
+
+def test_quality_flags_for_constant_zero_and_id_duplicates():
+    """
+    Специальный датасет с:
+    - константной колонкой;
+    - дубликатами идентификатора;
+    - колонкой с большим числом нулей.
+    """
+    df = pd.DataFrame(
+        {
+            "user_id": [1, 1, 2, 3],         # дубликат ID
+            "const_col": [5, 5, 5, 5],       # постоянная колонка
+            "value": [0, 0, 10, 0],          # 3 из 4 значений — ноль (75%)
+        }
+    )
+
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags = compute_quality_flags(summary, missing_df, df)
+
+    # Константные колонки
+    assert flags["has_constant_columns"] is True
+    assert "const_col" in flags["constant_columns"]
+
+    # Подозрительные дубликаты идентификаторов
+    assert flags["has_suspicious_id_duplicates"] is True
+    assert "user_id" in flags["id_columns_with_duplicates"]
+
+    # Много нулей в числовых колонках
+    assert flags["has_many_zero_values"] is True
+    assert "value" in flags["many_zero_value_columns"]
+    assert flags["zero_shares"]["value"] >= 0.5
 
 
 def test_correlation_and_top_categories():
     df = _sample_df()
     corr = correlation_matrix(df)
-    # корреляция между age и height существует
-    assert "age" in corr.columns or corr.empty is False
+    # корреляционная матрица либо не пустая, либо содержит колонку age
+    assert corr.empty is False or "age" in corr.columns
 
     top_cats = top_categories(df, max_columns=5, top_k=2)
     assert "city" in top_cats
