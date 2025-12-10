@@ -216,7 +216,6 @@ uv run eda-cli report data/my_data.csv --out-dir reports_my_data --json-summary
 ---
 
 ## 3. Требования к структуре и именованию
-
 Обязательная структура к дедлайну:
 
 - в корне репозитория: папка `homeworks/`;
