@@ -246,7 +246,7 @@ async def quality_from_csv(file: UploadFile = File(...)) -> QualityResponse:
 @app.post(
     "/quality-flags-from-csv",
     tags=["quality"],
-    summary="Возвращает все флаги качества из compute_quality_flags (HW03)",
+    summary="Возвращает ВСЕ флаги качества из compute_quality_flags (HW03)",
 )
 async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
     """
@@ -254,7 +254,7 @@ async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
       - принимает CSV-файл;
       - читает в DataFrame;
       - вызывает summarize_dataset, missing_table, compute_quality_flags;
-      - возвращает JSON со всеми флагами из HW03.
+      - возвращает JSON со всеми флагами.
     """
 
     if file.content_type not in (
@@ -280,3 +280,5 @@ async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
     flags = compute_quality_flags(summary, missing_df, df=df)
 
     return {"flags": flags}
+
+
