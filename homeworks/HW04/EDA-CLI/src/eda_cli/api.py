@@ -254,7 +254,7 @@ async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
       - принимает CSV-файл;
       - читает в DataFrame;
       - вызывает summarize_dataset, missing_table, compute_quality_flags;
-      - возвращает JSON со всеми флагами, включая ваши новые из HW03.
+      - возвращает JSON со всеми флагами из HW03.
     """
 
     if file.content_type not in (
