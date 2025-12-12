@@ -38,7 +38,7 @@ uv run eda-cli overview data/example.csv
 ### Полный EDA-отчёт
 
 ```bash
-uv run eda-cli report data/example.csv --out-dir reports_example
+uv run eda-cli report data/example.csv --out-dir reports
 ```
 Дополнительные параметры команды report:
 
