@@ -117,7 +117,7 @@ requires-dist = [
     { name = "pandas", specifier = ">=2.3.3" },
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "typer", specifier = ">=0.20.0" },
-    { name = "unicorn", specifier = ">=2.1.4" },
+    { name = "unicorn", extras = ["standard"], specifier = ">=2.1.4" },
 ]
 
 [[package]]

@@ -14,7 +14,7 @@ dependencies = [
     "pandas>=2.3.3",
     "pytest>=9.0.2",
     "typer>=0.20.0",
-    "unicorn>=2.1.4",
+    "unicorn[standard]>=2.1.4",
 ]
 
 [project.scripts]
