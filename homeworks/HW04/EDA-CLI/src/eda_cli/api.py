@@ -246,7 +246,7 @@ async def quality_from_csv(file: UploadFile = File(...)) -> QualityResponse:
 @app.post(
     "/quality-flags-from-csv",
     tags=["quality"],
-    summary="Возвращает ВСЕ флаги качества из compute_quality_flags (HW03)",
+    summary="Возвращает все флаги качества из compute_quality_flags (HW03)",
 )
 async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
     """
