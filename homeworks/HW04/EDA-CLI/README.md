@@ -256,7 +256,90 @@ curl -X POST "http://127.0.0.1:8000/quality-from-csv" \
 - `dataset_shape` - реальные размеры датасета (`n_rows`, `n_cols`);
 - `latency_ms` - время обработки запроса.
 
+## 5. `POST /quality-flags-from-csv (новый эндпоинт)`
+Эндпоинт возвращает полный набор флагов качества, вычисленных функцией `compute_quality_flags`, включая новые эвристики из HW03:
+- constant_columns
+- has_constant_columns
+- has many_zero_values
+- has_suspicious_id_duplicates
+- id_columns / id_columns_with_duplicates
+- many_zero_value_columns
+- max_missing_share
+- quality_score
+- too_few_rows
+- too_many_columns
+- too_many_missing
+- zero_shares
+
+**Запрос:**
+
+```http
+POST /quality-flags-from-csv
+Content-Type: multipart/form-data
+file: <CSV-file>
+```
+Через Swagger:
+
+- в `/docs` открыть `POST /quality-flags-from-csv`,
+- нажать `Try it out`,
+- выбрать файл (например, `data/example.csv`),
+- нажать `Execute`.
+
+**Пример ответа:**
+
+```http
+{
+  "flags": {
+    "too_few_rows": False,
+    "too_many_columns": False,
+    "max_missing_share": 0.12,
+    "too_many_missing": False,
+    "constant_columns": [],
+    "has_constant_columns": False,
+    "id_columns": ["user_id"],
+    "id_columns_with_duplicates": [],
+    "has_suspicious_id_duplicates": False,
+    "zero_shares": {"amount": 0.45},
+    "many_zero_value_columns": [],
+    "has_many_zero_values": False,
+    "quality_score": 0.84,
+  }
+}
+```
+Этот эндпоинт используется, если требуется полный набор эвристик качества, а не только булевы признаки.
+
 ---
+## `GET /metric (дополнительное задание)`
+Возвращает статистику работы сервиса. Хранится в памяти и обновляется при вызове всех quality‑эндпоинтов.
+
+Содержит:
+- total_requests — общее число запросов ко всем quality-эндпоинтам;
+- avg_latency_ms — средняя задержка обработки запроса;
+- last_ok_for_model — последнее значение флага готовности датасета.
+
+**Запрос:**
+
+```http
+GET /metrics
+```
+
+**Ожидаемый ответ `200 OK` (JSON):**
+
+```http
+{
+"total_requests": 12,
+"avg_latency_ms": 5.3,
+"last_ok_for_model": true
+}
+```
+
+Пример проверки через `curl`:
+
+```bash
+curl http://127.0.0.1:8000/metrics
+```
+
+Эндпоинт удобен для наблюдения за поведением сервиса и проверки нагрузки.
 
 ## Структура проекта (упрощённо)
 
