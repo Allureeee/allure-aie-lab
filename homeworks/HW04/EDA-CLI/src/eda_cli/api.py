@@ -242,3 +242,43 @@ async def quality_from_csv(file: UploadFile = File(...)) -> QualityResponse:
         flags=flags_bool,
         dataset_shape={"n_rows": n_rows, "n_cols": n_cols},
     )
+
+@app.post(
+    "/quality-flags-from-csv",
+    tags=["quality"],
+    summary="Возвращает ВСЕ флаги качества из compute_quality_flags (HW03)",
+)
+async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
+    """
+    Эндпоинт:
+      - принимает CSV-файл;
+      - читает в DataFrame;
+      - вызывает summarize_dataset, missing_table, compute_quality_flags;
+      - возвращает JSON со всеми флагами, включая ваши новые из HW03.
+    """
+
+    if file.content_type not in (
+        "text/csv",
+        "application/vnd.ms-excel",
+        "application/octet-stream",
+    ):
+        raise HTTPException(
+            status_code=400,
+            detail="Ожидается CSV-файл (content-type text/csv).",
+        )
+
+    try:
+        df = pd.read_csv(file.file)
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Не удалось прочитать CSV: {exc}")
+
+    if df.empty:
+        raise HTTPException(status_code=400, detail="CSV-файл пуст.")
+
+    # --- Ваше EDA ядро ---
+    summary = summarize_dataset(df)
+    missing_df = missing_table(df)
+    flags = compute_quality_flags(summary, missing_df, df=df)
+
+    # Возвращаем словарь *как есть* (никакого фильтра по bool!)
+    return {"flags": flags}
