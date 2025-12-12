@@ -77,6 +77,27 @@ class QualityResponse(BaseModel):
         description="Размеры датасета: {'n_rows': ..., 'n_cols': ...}, если известны",
     )
 
+class QualityFlagsResponse(BaseModel):
+    flags: dict = Field(
+        ...,
+        description="Полный набор флагов качества из compute_quality_flags",
+        example={
+            "too_few_rows": False,
+            "too_many_columns": False,
+            "max_missing_share": 0.12,
+            "too_many_missing": False,
+            "constant_columns": [],
+            "has_constant_columns": False,
+            "id_columns": ["user_id"],
+            "id_columns_with_duplicates": [],
+            "has_suspicious_id_duplicates": False,
+            "zero_shares": {"col1": 0.0, "col2": 0.45},
+            "many_zero_value_columns": [],
+            "has_many_zero_values": False,
+            "quality_score": 0.84
+        }
+    )
+
 
 # ---------- Системный эндпоинт ----------
 
@@ -245,10 +266,11 @@ async def quality_from_csv(file: UploadFile = File(...)) -> QualityResponse:
 
 @app.post(
     "/quality-flags-from-csv",
+    response_model=QualityFlagsResponse,
     tags=["quality"],
     summary="Возвращает ВСЕ флаги качества из compute_quality_flags (HW03)",
 )
-async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
+async def quality_flags_from_csv(file: UploadFile = File(...)) -> QualityFlagsResponse:
     """
     Эндпоинт:
       - принимает CSV-файл;
@@ -279,6 +301,5 @@ async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
     missing_df = missing_table(df)
     flags = compute_quality_flags(summary, missing_df, df=df)
 
-    return {"flags": flags}
-
+    return QualityFlagsResponse(flags=flags)
 
