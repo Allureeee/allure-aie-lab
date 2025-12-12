@@ -275,10 +275,8 @@ async def quality_flags_from_csv(file: UploadFile = File(...)) -> dict:
     if df.empty:
         raise HTTPException(status_code=400, detail="CSV-файл пуст.")
 
-    # --- Ваше EDA ядро ---
     summary = summarize_dataset(df)
     missing_df = missing_table(df)
     flags = compute_quality_flags(summary, missing_df, df=df)
 
-    # Возвращаем словарь *как есть* (никакого фильтра по bool!)
     return {"flags": flags}
