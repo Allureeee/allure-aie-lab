@@ -52,7 +52,7 @@ uv run eda-cli overview data/example.csv
 ### Полный EDA-отчёт
 
 ```bash
-uv run eda-cli report data/example.csv --out-dir reports_example
+uv run eda-cli report data/example.csv --out-dir reports
 ```
 Дополнительные параметры команды report:
 - max-hist-columns – сколько числовых колонок включать в набор гистограмм (по умолчанию 6);
@@ -64,7 +64,7 @@ uv run eda-cli report data/example.csv --out-dir reports_example
 Пример вызова с опциями:
 ```bash
 uv run eda-cli report data/example.csv \
-  --out-dir reports_example \
+  --out-dir reports \
   --max-hist-columns 8 \
   --top-k-categories 5 \
   --min-missing-share 0.4 \
