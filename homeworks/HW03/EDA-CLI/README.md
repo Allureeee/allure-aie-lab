@@ -52,7 +52,7 @@ uv run eda-cli report data/example.csv --out-dir reports
 Пример вызова с опциями:
 ```bash
 uv run eda-cli report data/example.csv \
-  --out-dir reports_example \
+  --out-dir reports \
   --max-hist-columns 8 \
   --top-k-categories 5 \
   --min-missing-share 0.4 \
