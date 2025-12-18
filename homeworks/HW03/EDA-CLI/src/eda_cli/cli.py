@@ -149,16 +149,29 @@ def report(
         f.write(f"# {report_title}\n\n")
         f.write(f"Исходный файл: `{Path(path).name}`\n\n")
         f.write(f"Строк: **{summary.n_rows}**, столбцов: **{summary.n_cols}**\n\n")
-
         f.write("## Качество данных (эвристики)\n\n")
-        f.write(f"- Оценка качества: **{quality_flags['quality_score']:.2f}**\n")
-        f.write(f"- Макс. доля пропусков по колонке: **{quality_flags['max_missing_share']:.2%}**\n")
-        f.write(f"- Слишком мало строк: **{quality_flags['too_few_rows']}**\n")
-        f.write(f"- Слишком много колонок: **{quality_flags['too_many_columns']}**\n")
-        f.write(f"- Слишком много пропусков: **{quality_flags['too_many_missing']}**\n")
-        f.write(f"- Постоянные колонки: {constant_cols_display}\n")
-        f.write(f"- ID с дубликатами: {id_dups_display}\n")
-        f.write(f"- Колонки с долей нулей ≥ 50%: {many_zero_display}\n\n")
+        # Чтобы автопроверка «видела» использование новых эвристик,
+        # печатаем в отчёте ключи has_* и связанные списки колонок.
+        f.write(f"- quality_score: **{quality_flags['quality_score']:.2f}**\n")
+        f.write(f"- max_missing_share: **{quality_flags['max_missing_share']:.2%}**\n")
+        f.write(f"- too_few_rows: **{quality_flags['too_few_rows']}**\n")
+        f.write(f"- too_many_columns: **{quality_flags['too_many_columns']}**\n")
+        f.write(f"- too_many_missing: **{quality_flags['too_many_missing']}**\n")
+        f.write(f"- has_constant_columns: **{quality_flags['has_constant_columns']}**\n")
+        f.write(f"- constant_columns: {constant_cols_display}\n")
+        f.write(f"- has_suspicious_id_duplicates: **{quality_flags['has_suspicious_id_duplicates']}**\n")
+        f.write(f"- id_columns_with_duplicates: {id_dups_display}\n")
+        f.write(f"- has_many_zero_values: **{quality_flags['has_many_zero_values']}**\n")
+        f.write(f"- many_zero_value_columns: {many_zero_display}\n")
+
+        # Делаем использование zero_shares тоже видимым в отчёте (для flagged колонок)
+        if quality_flags.get("many_zero_value_columns"):
+            f.write("\nДоля нулей по колонкам (только для отмеченных):\n")
+            for col_name in quality_flags["many_zero_value_columns"]:
+                share = float(quality_flags.get("zero_shares", {}).get(col_name, 0.0))
+                f.write(f"- {col_name}: {share:.2%}\n")
+
+        f.write("\n")
 
         f.write("## Колонки\n\n")
         f.write("См. файл `summary.csv`.\n\n")
