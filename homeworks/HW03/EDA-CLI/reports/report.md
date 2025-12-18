@@ -6,14 +6,20 @@
 
 ## Качество данных (эвристики)
 
-- Оценка качества: **0.59**
-- Макс. доля пропусков по колонке: **5.56%**
-- Слишком мало строк: **True**
-- Слишком много колонок: **False**
-- Слишком много пропусков: **False**
-- Постоянные колонки: нет
-- ID с дубликатами: user_id
-- Колонки с долей нулей ≥ 50%: churned
+- quality_score: **0.59**
+- max_missing_share: **5.56%**
+- too_few_rows: **True**
+- too_many_columns: **False**
+- too_many_missing: **False**
+- has_constant_columns: **False**
+- constant_columns: нет
+- has_suspicious_id_duplicates: **True**
+- id_columns_with_duplicates: user_id
+- has_many_zero_values: **True**
+- many_zero_value_columns: churned
+
+Доля нулей по колонкам (только для отмеченных):
+- churned: 66.67%
 
 ## Колонки
 
