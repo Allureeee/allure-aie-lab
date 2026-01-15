@@ -1,0 +1,27 @@
+{
+  "dataset-01": {
+    "best_model": "KMeans",
+    "best_params": {
+      "k": 2
+    },
+    "criterion": "max silhouette (KMeans on all points)",
+    "silhouette": 0.5185159566612942
+  },
+  "dataset-02": {
+    "best_model": "DBSCAN",
+    "best_params": {
+      "eps": 0.6,
+      "min_samples": 12
+    },
+    "criterion": "max silhouette (DBSCAN on non-noise: labels != -1)",
+    "silhouette": 0.31017009117537936
+  },
+  "dataset-03": {
+    "best_model": "KMeans",
+    "best_params": {
+      "k": 4
+    },
+    "criterion": "max silhouette (KMeans on all points)",
+    "silhouette": 0.3140896959261483
+  }
+}

@@ -1,0 +1,56 @@
+[
+  {
+    "dataset": "dataset-01",
+    "model": "KMeans",
+    "noise_share": 0.0,
+    "eval_note": "all points",
+    "silhouette": 0.5185159566612942,
+    "davies_bouldin": 0.6853295219054459,
+    "calinski_harabasz": 11786.95462267153
+  },
+  {
+    "dataset": "dataset-01",
+    "model": "DBSCAN",
+    "noise_share": 0.0735,
+    "eval_note": "non-noise (labels != -1)",
+    "silhouette": 0.3955571683968236,
+    "davies_bouldin": 1.184960092562634,
+    "calinski_harabasz": 8749.295114980152
+  },
+  {
+    "dataset": "dataset-02",
+    "model": "KMeans",
+    "noise_share": 0.0,
+    "eval_note": "all points",
+    "silhouette": 0.3057963782011001,
+    "davies_bouldin": 1.3234721699867644,
+    "calinski_harabasz": 3573.3933329348392
+  },
+  {
+    "dataset": "dataset-02",
+    "model": "DBSCAN",
+    "noise_share": 0.058875,
+    "eval_note": "non-noise (labels != -1)",
+    "silhouette": 0.31017009117537936,
+    "davies_bouldin": 0.6918778112005147,
+    "calinski_harabasz": 36.49075683899956
+  },
+  {
+    "dataset": "dataset-03",
+    "model": "KMeans",
+    "noise_share": 0.0,
+    "eval_note": "all points",
+    "silhouette": 0.3140896959261483,
+    "davies_bouldin": 1.1596756007747975,
+    "calinski_harabasz": 6492.278930703822
+  },
+  {
+    "dataset": "dataset-03",
+    "model": "DBSCAN",
+    "noise_share": 0.6350666666666667,
+    "eval_note": "non-noise (labels != -1)",
+    "silhouette": 0.21625222110477954,
+    "davies_bouldin": 0.9535452983926783,
+    "calinski_harabasz": 686.9708260743284
+  }
+]
