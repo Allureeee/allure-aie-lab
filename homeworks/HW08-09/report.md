@@ -15,7 +15,7 @@
 
 ## 3. Данные
 
-- Датасет: (KMNIST / EMNIST Balanced / CIFAR10)
+- Датасет: (EMNIST Balanced)
 - Разделение: train/val/test (например, train split 80/20 + test из torchvision)
 - Трансформации (transform): (ToTensor / Normalize / другое)
 - Комментарий (1-3 предложения): что важно в данных (число классов, размерность, сложность)

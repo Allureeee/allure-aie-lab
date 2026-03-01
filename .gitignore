@@ -20,6 +20,10 @@ ENV/
 .conda/
 .venv*/
 
+# datasets
+data/
+homeworks/HW08-09/data/
+
 # Кеши Python и скомпилированные файлы
 __pycache__/
 *.py[cod]
