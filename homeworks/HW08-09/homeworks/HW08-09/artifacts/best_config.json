@@ -1,0 +1,26 @@
+{
+  "experiment_id": "E4",
+  "dataset": "EMNIST",
+  "seed": 42,
+  "architecture": {
+    "hidden_sizes": [
+      512,
+      256,
+      128
+    ],
+    "activation": "ReLU",
+    "dropout": 0.0,
+    "batchnorm": true
+  },
+  "training": {
+    "loss": "CrossEntropyLoss",
+    "optimizer": "Adam",
+    "lr": 0.001,
+    "weight_decay": 0.0,
+    "momentum": 0.0,
+    "early_stopping_patience": 4,
+    "epochs_trained": 13,
+    "best_val_accuracy": 0.8589323654390935,
+    "best_val_loss": 0.427091949089053
+  }
+}
