@@ -1,0 +1,26 @@
+{
+  "experiment_id": "C4",
+  "dataset": "Flowers102",
+  "seed": 42,
+  "architecture": {
+    "model_type": "ResNet18",
+    "pretrained": true,
+    "num_classes": 102,
+    "input_size": [
+      3,
+      224,
+      224
+    ],
+    "train_mode": "layer4+fc"
+  },
+  "transforms": {
+    "train": "train_tf",
+    "eval": "eval_tf"
+  },
+  "training": {
+    "loss": "CrossEntropyLoss",
+    "optimizer": "Adam",
+    "lr": 0.001,
+    "epochs_trained": 2
+  }
+}
