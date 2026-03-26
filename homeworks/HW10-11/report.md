@@ -43,8 +43,8 @@
 
 - C1 (simple-cnn-base): простая CNN без аугментаций. Использовались базовые transforms и обучение с нуля. Этот эксперимент нужен как baseline для сравнения с аугментациями и transfer learning.
 - C2 (simple-cnn-aug): та же архитектура простой CNN, что и в C1, но с augmentation transforms на train. Это позволяет отдельно посмотреть, помогает ли расширение обучающего распределения без изменения самой архитектуры.
-- C3 (resnet18-head-only): та же архитектура простой CNN, что и в C1, но с augmentation transforms на train. Это позволяет отдельно посмотреть, помогает ли расширение обучающего распределения без изменения самой архитектуры.
-- C4 (resnet18-finetune): использовалась pretrained ResNet18. Backbone был заморожен, обучалась только классификационная голова (fc). Эксперимент показывает, насколько полезны уже готовые визуальные признаки без fine-tuning глубоких слоёв.
+- C3 (resnet18-head-only): использовалась pretrained ResNet18. Backbone был заморожен, обучалась только классификационная голова (fc). Эксперимент показывает, насколько полезны уже готовые визуальные признаки без fine-tuning глубоких слоёв.
+- C4 (resnet18-finetune): использовалась pretrained ResNet18 с partial fine-tuning. В моём случае дообучались layer4 + fc, то есть верхняя часть сети адаптировалась под конкретный датасет. Этот эксперимент оказался лучшим по качеству.
 
 Дополнительно:
 
@@ -90,7 +90,7 @@
 - Кривые лучшего прогона классификации: `./artifacts/figures/classification_curves_best.png`
 - Сравнение C1-C4: `./artifacts/figures/classification_compare.png`
 - Визуализация аугментаций: `./artifacts/figures/augmentations_preview.png`
-- Визуализации второй части: `./artifacts/figures/...`
+- Визуализации второй части: `./artifacts/figures/detection_examples.png`, `./artifacts/figures/detection_metrics.png`
 
 Короткая сводка (6-10 строк):
 
