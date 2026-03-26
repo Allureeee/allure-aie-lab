@@ -10,8 +10,8 @@
 ## 2. Среда и воспроизводимость
 
 - Python: 3.14.3
-- pandas / numpy / scikit-learn:
-- torch:
+- pandas / numpy / scikit-learn: 3.0.1/2.4.2/1.8.0
+- torch: 2.10.0+cpu
 - Устройство (CPU/GPU): cpu
 - Seed: 42
 - Как запустить: открыть `HW12.ipynb` и выполнить Run All.
