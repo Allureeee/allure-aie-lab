@@ -1,0 +1,22 @@
+{
+  "experiment_id": "R1",
+  "dataset": "S12-hw-dataset.csv",
+  "seed": 42,
+  "split_summary": "train=3024 (2025-01-01 00:00:00 -> 2025-05-06 23:00:00); val=648 (2025-05-07 00:00:00 -> 2025-06-02 23:00:00); test=648 (2025-06-03 00:00:00 -> 2025-06-29 23:00:00)",
+  "window_size": 24,
+  "horizon": 1,
+  "batch_size": 64,
+  "scaler": "StandardScaler(target, fit on train only)",
+  "model_type": "GRUForecaster",
+  "input_size": 1,
+  "hidden_size": 64,
+  "num_layers": 2,
+  "optimizer": "Adam",
+  "lr": 0.001,
+  "epochs_trained": 20,
+  "selection_criterion": "best validation loss",
+  "MAE": 5.546346187591553,
+  "RMSE": 7.186886703199038,
+  "MAPE": 3.726306200027466,
+  "sMAPE": 3.771780014038086
+}
