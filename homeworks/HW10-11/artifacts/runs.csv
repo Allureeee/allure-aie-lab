@@ -6,5 +6,3 @@ C4,classification,Flowers102,42,ResNet18 layer4+fc,Adam,0.001,2,0.86078431372549
 B-base,detection,KITTI,42,fasterrcnn_mobilenet_v3_large_fpn,,,,,,0.46788990825258814,0.7968749999875487,0.7913613406212434,"2.4.3 base detection example, score_threshold=0.5"
 V1,detection,KITTI,42,fasterrcnn_mobilenet_v3_large_fpn,,,,,,0.35060975609649203,0.7823129251647463,0.7834758788952983,score_threshold=0.3
 V2,detection,KITTI,42,fasterrcnn_mobilenet_v3_large_fpn,,,,,,0.7164179104424149,0.6530612244853534,0.8064293977314112,score_threshold=0.7
-C1,Flowers102,42,SimpleCNN,Adam,0.001,0.0,5,0.18529411764705883,3.698196024053237
-C2,Flowers102,42,SimpleCNN,Adam,0.001,0.0,5,0.14607843137254903,3.5177674882552203
