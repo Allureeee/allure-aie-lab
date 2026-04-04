@@ -23,6 +23,7 @@ ENV/
 # datasets
 data/
 homeworks/HW08-09/data/
+homeworks/HW13/artifacts/trainer_output/
 
 # Кеши Python и скомпилированные файлы
 __pycache__/
