@@ -1,0 +1,4 @@
+﻿query,before_retrieved_sources,after_retrieved_sources,changed
+Какие признаки стресса бывают у кошек?,"cat_008, cat_003, cat_009","cat_008, cat_013, cat_013",True
+Как игра связана с охотничьими инстинктами кошек?,"cat_011, cat_012, cat_001","cat_011, cat_014, cat_014",True
+Почему кошки часто приземляются на лапы после падения?,"cat_005, cat_010, cat_009","cat_015, cat_014, cat_005",True
